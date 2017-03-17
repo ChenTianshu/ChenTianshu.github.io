@@ -1,0 +1,62 @@
+---
+layout : post
+title : C# Event
+---
+
+模拟器程序要和上层Qt界面通过dds进行数据交互，上午在网上找了一些C#自定义事件的资料，为后面处理dds接收接口部分做点准备。  
+
+***
+
+_C#控制台程序_  
+_功能：键盘键入，计数器开始计时_  
+
+```  
+namespace Event  
+{  
+    public delegate void InforHandle(object sender);
+
+    public class Keyboard
+    {
+        public string KeyboardMsg = null;
+        public event InforHandle KeyboardClick;
+        public void ClickWait()
+        {
+            Console.WriteLine("Waiting for Keyboard input...");
+            KeyboardMsg = Console.ReadLine();
+            if (KeyboardMsg != null)
+            {
+                KeyboardClick(this);
+            }
+        }
+    }
+
+    public class TimerCount
+    {
+        protected int i;
+        public void TimerClickStart(object sender)
+        { 
+            i = 0;
+            while(true)
+            {
+                Console.WriteLine("Tik Tok {0}",i);
+                System.Threading.Thread.Sleep(1000);
+                i++;
+            }
+        }
+    }
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Keyboard myKeyboard = new Keyboard();
+            TimerCount myTimerCount = new TimerCount();
+
+            myKeyboard.KeyboardClick += new InforHandle(myTimerCount.TimerClickStart);
+            myKeyboard.ClickWait();
+            Console.ReadKey();
+        }
+    }
+}
+```
