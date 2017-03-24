@@ -1,0 +1,35 @@
+---
+layout : post
+title : 跨线程修改控件属性
+---
+C#窗口应用中增加了一个线程，用来监听DDS端口接收的数据，接收数据后进入处理程序，需要修改主线程中部分窗口控件的属性，报错：线程间操作无效，从不是创建控件的线程访问它。  
+解决方法：  
+1. 在窗体构造函数中加入`CheckForIllegalCroseThreadCalls = false`
+2. 修改处理程序，参考[_C#中Invoke的用法_](http://blog.csdn.net/liujiejieliu1234/article/details/45312141)  
+
+```
+this.Invoke(new EventHandler(delegate
+{
+	switch (EventType)
+	{
+		case 0:
+			{
+				RadarSubHandle_00();
+				StreamWriter Testtxt = File.AppendText("D:\\OutDataSub.txt");
+				Testtxt.Write("Sub String 00\n");
+				Testtxt.Write("\r\n");
+				Testtxt.Close();
+				break;
+			}
+		case 1:
+			{
+				RadarSubHandle_01();
+				StreamWriter Testtxt = File.AppendText("D:\\OutDataSub.txt");
+				Testtxt.Write("Sub String 01\n");
+				Testtxt.Write("\r\n");
+				Testtxt.Close();
+				break;
+			}
+	}
+}));
+```
