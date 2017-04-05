@@ -1,0 +1,31 @@
+---
+
+layout : post  
+title : 653系统Flash调试
+
+---
+653系统RAM调试转为Flash调试:  
+1.修改模块支持层设置，调试方式修改为ROM部署模式，为部署文件分配起始地址，重新编译模块支持层，生成的MSL.bin文件下载到工控机Flash中。  
+2.项目文件中进入配置项目，为需要下载到Flash中的文件分配起始地址；在653系统中，需要下载的文件共有5种：coreos.bin/partos.bin/config.bin/payloadMap_Rom.bin/p1.bin/p2.bin...集成项目编译成功后，这些二进制文件可以在相应的项目文件目录下找到。  
+3.配置下载文件起始地址的时候需要考虑下载文件大小，同时下载文件地址需要包含在xxx设置的范围之内。payloadMap_Rom.bin文件下载地址和模块支持层部署文件起始地址保持一致。  
+4.启动工控机，进入Uboot中，使用loady命令，通过串口ymodern协议依次下载5种下载文件，可以使用xp系统自带的超级终端；每个文件下载完成后，会存储在UbootEnv配置的地址中(ex 0x0F000000)，erase指令擦除下载目标起始地址(ex 0x70C00000)，使用cp.b指令将下载文件拷贝到目标起始地址。    
+_loady_  
+_#######_   
+_erase 0x70C00000 0x70CFFFFF_  
+_cp.b 0x0F000000 0x70C00000 0x31000_   
+5.记录当前工控机Flash调试起始地址分配：  
+  
+___  
+  
+msl.bin 0x70000000  
+cos.bin 0x70C00000  
+pos.bin 0x70CE0000  
+config.bin 0x70D30000  
+p1.bin 70D90000  
+p2.bin 0x70DF0000  
+payloadMap_Rom.bin 0x70E50000  
+
+___  
+
+ 
+
