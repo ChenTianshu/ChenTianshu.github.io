@@ -1,0 +1,10 @@
+---  
+
+layout : post  
+title : MFC学习笔记05  
+
+---  
+
+MFC : 文档/视图体系结构  
+文档对象:CDocument  
+视图对象:CView  
